@@ -2,36 +2,91 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Will you be my Valentine?</title>
+  <title>For My Pal 💖</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       font-family: Arial, sans-serif;
-      background: #ffe6f2;
+      background: radial-gradient(circle at top, #ffe3ed, #ff9a9e);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
+      overflow: hidden;
       text-align: center;
     }
+    .hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .heart {
+      position: absolute;
+      color: #ff4d6a;
+      font-size: 18px;
+      opacity: 0.7;
+      animation: floatUp 8s linear infinite;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+      10% { opacity: 0.8; }
+      100% { transform: translateY(-10vh) translateX(20px); opacity: 0; }
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.2);
+      padding: 25px 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      backdrop-filter: blur(6px);
+      max-width: 430px;
+    }
     h1 {
-      color: #d6336c;
+      color: #ffffff;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      margin-top: 0;
+    }
+    h2 {
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #fff;
+      max-width: 420px;
+      margin: 6px auto;
     }
     .buttons {
       margin-top: 20px;
+      position: relative;
+      height: 60px;
     }
     button {
-      padding: 10px 20px;
-      margin: 0 10px;
+      padding: 10px 24px;
       border: none;
       border-radius: 20px;
       cursor: pointer;
       font-size: 16px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
     }
     #yesBtn {
       background-color: #ff4d6a;
       color: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    #yesBtn:hover {
+      transform: scale(1.05);
     }
     #noBtn {
       background-color: #ffffff;
@@ -39,32 +94,122 @@
       border: 1px solid #ff4d6a;
     }
     #message {
-      margin-top: 25px;
+      margin-top: 20px;
       font-size: 18px;
-      color: #c2185b;
+      color: #ffffff;
       display: none;
+    }
+    .small-note {
+      margin-top: 14px;
+      font-size: 14px;
+      color: #ffeef7;
     }
   </style>
 </head>
 <body>
-  <h1>Will you be my Valentine? 💖</h1>
-  <div class="buttons">
-    <button id="yesBtn">Yes</button>
-    <button id="noBtn">No</button>
+  <!-- floating hearts background -->
+  <div class="hearts" id="hearts"></div>
+
+  <div class="card">
+    <h1>Happy Birthday, Pal 🎂💘</h1>
+    <p>
+      14th February is when the world celebrates love…<br>
+      and when the universe decided to send me you.
+    </p>
+    <p>
+      Now I have an important, very serious, totally scientific question:
+    </p>
+    <h2>Birthday girl, will you be my Valentine too?</h2>
+    <p>– Yours hopelessly-in-love idiot, Nik</p>
+
+    <div class="buttons">
+      <button id="yesBtn">Yes 💗</button>
+      <button id="noBtn">No 🙈</button>
+    </div>
+
+    <div id="message">
+      I knew you’d say yes, Pal! ❤️<br>
+      Double celebration unlocked: your birthday + you as my Valentine = luckiest Nik on the planet. 😜
+      <div class="small-note">
+        PS: 14 Feb is now officially reserved for cake, cuddles and unlimited pampering from me.
+      </div>
+    </div>
+
+    <div class="small-note">
+      (Warning: Trying to press “No” may cause button running away and extra tight hugs from Nik.)
+    </div>
   </div>
-  <div id="message">I knew you'd say yes! ❤️<br>Can't wait to celebrate with you.</div>
 
   <script>
+    // Floating hearts
+    const heartsContainer = document.getElementById('hearts');
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.textContent = '❤';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = 6 + Math.random() * 5 + 's';
+      heart.style.fontSize = 14 + Math.random() * 16 + 'px';
+      heartsContainer.appendChild(heart);
+      setTimeout(() => heart.remove(), 11000);
+    }
+    setInterval(createHeart, 600);
+
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
     const message = document.getElementById('message');
 
+    let yesScale = 1;
+    let noClickCount = 0;
+
     yesBtn.addEventListener('click', () => {
       message.style.display = 'block';
+      yesBtn.textContent = 'She said YES! 💘';
+      yesBtn.style.transform = 'scale(1.15)';
+      yesBtn.style.boxShadow = '0 0 20px rgba(255,255,255,0.8)';
     });
 
-    noBtn.addEventListener('click', () => {
-      noBtn.textContent = 'Please say yes 🥺';
+    // Make "No" button run away + grow "Yes" button gradually
+    function moveNoButton() {
+      const container = document.querySelector('.buttons');
+      const containerRect = container.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      const maxX = containerRect.width - btnRect.width;
+      const maxY = containerRect.height - btnRect.height;
+
+      const randX = Math.max(0, Math.random() * maxX);
+      const randY = Math.max(0, Math.random() * maxY);
+
+      noBtn.style.position = 'absolute';
+      noBtn.style.left = randX + 'px';
+      noBtn.style.top = randY + 'px';
+    }
+
+    noBtn.addEventListener('mouseover', () => {
+      noClickCount++;
+      moveNoButton();
+
+      const messages = [
+        'Are you sure, Pal? 😏',
+        'Think again, birthday girl 💕',
+        'No is illegal today 😜',
+        'Last chance to choose YES 👀'
+      ];
+      noBtn.textContent = messages[noClickCount % messages.length];
+
+      yesScale += 0.1;
+      yesBtn.style.transform = 'scale(' + yesScale + ')';
+
+      if (yesScale > 1.5) {
+        yesBtn.textContent = 'JUST CLICK ME 💖';
+      }
+    });
+
+    noBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Error 404: “No” not available for Pal on 14th Feb 💝');
+      moveNoButton();
     });
   </script>
 </body>
